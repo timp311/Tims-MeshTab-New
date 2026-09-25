@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en" class="meshtab-booting">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tim's MeshTab</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="newtab-bootstrap.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Tim's MeshTab">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div><div class="eyebrow">TIM'S</div><div class="brand-name">MeshTab</div></div>
+      </div>
+
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+        <input id="globalSearch" type="search" placeholder="Search tabs, groups, notes, tasks, reminders, overlays, and links..." autocomplete="off" aria-label="Search MeshTab">
+        <kbd>/</kbd>
+      </div>
+
+      <button id="homeScreenBtn" class="home-screen-link" type="button" hidden title="Open the Chrome Home screen">Home Screen</button>
+
+      <div class="top-actions">
+        <div class="date-block clock-size-medium" id="dateBlock" aria-label="Today's date"></div>
+        <button id="settingsBtn" class="btn btn-secondary compact icon-plus-btn settings-gear-btn" type="button" aria-label="Settings" title="MeshTab startup, window, and feature settings">⚙</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="desktop-bar" aria-label="MeshTab Tabs">
+        <div id="desktopTabs" class="desktop-tabs"></div>
+        <div class="desktop-actions">
+          <button id="addDesktopMenuBtn" class="btn btn-primary compact icon-plus-btn" type="button" aria-haspopup="menu" aria-label="Add a Tab, Group, Note, or Task" title="Add a Tab, Group, Note, or Task">+</button>
+          <div id="addDesktopMenu" class="bucket-more-menu" popover="auto" role="menu">
+            <button class="bucket-more-item" id="addDesktopTabItem" type="button" role="menuitem">New Tab</button>
+            <button class="bucket-more-item" id="addDesktopCalendarItem" type="button" role="menuitem">New Calendar Tab</button>
+            <div id="addContentMenuItems" class="add-content-menu-items">
+              <div class="bucket-more-divider" role="separator"></div>
+              <button class="bucket-more-item" id="addContentGroupBtn" type="button" role="menuitem">New Group</button>
+              <button class="bucket-more-item" id="addContentNoteBtn" type="button" role="menuitem">New Note</button>
+              <button class="bucket-more-item" id="addContentTaskBtn" type="button" role="menuitem">New Task</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="quick-links-bar" aria-label="Quick Links" id="quickLinksBar">
+        <div id="quickLinksTabs" class="quick-links-tabs"></div>
+      </section>
+
+      <section class="command-row">
+        <div class="stats" aria-label="MeshTab summary">
+          <div class="stat"><strong id="bucketCount">0</strong><span>GROUPS</span></div>
+          <div class="stat"><strong id="meshCount">0</strong><span>meshed links</span></div>
+          <div class="stat"><strong id="noteCount">0</strong><span>meshed notes</span></div>
+          <div class="stat"><strong id="openTaskCount">0</strong><span>open tasks</span></div>
+          <div class="stat" id="allocatedTimeStat"><strong id="allocatedTimeTotal">0h</strong><span>allocated time</span></div>
+          <div class="stat"><strong id="bookmarkCount">0</strong><span>Chrome bookmarks</span></div>
+        </div>
+        <div id="calendarCommandActions" class="calendar-command-actions hidden"></div>
+        <div class="command-actions">
+          <button id="workClockBtn" class="btn btn-secondary compact work-clock-launch" type="button" title="Work Clock" aria-label="Work Clock">⏱</button>
+        </div>
+      </section>
+
+      <section class="new-project-row" aria-label="Manage this Tab">
+        <div id="tabGearCluster" class="tab-gear-cluster">
+          <div id="calendarTabRowActions" class="calendar-tab-row-actions hidden">
+            <button class="btn btn-primary compact" id="openCalendarExternalBtn" type="button" title="Open this calendar in Google Calendar">Open in Google Calendar</button>
+          </div>
+          <button class="btn btn-secondary compact icon-plus-btn" id="desktopGearBtn" type="button" aria-haspopup="menu" aria-label="Tab options" title="Tab options">⚙</button>
+          <div id="desktopGearMenu" class="bucket-more-menu" popover="auto" role="menu">
+            <button class="bucket-more-item" id="desktopGearRenameBtn" type="button" role="menuitem">Rename</button>
+            <button class="bucket-more-item" id="desktopGearCalendarSettingsBtn" type="button" role="menuitem">Calendar Settings</button>
+            <button class="bucket-more-item" id="desktopGearArchiveBtn" type="button" role="menuitem">Archive</button>
+            <button class="bucket-more-item danger-text" id="desktopGearDeleteBtn" type="button" role="menuitem">Delete</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="workspace-layout">
+        <aside id="openPagesRail" class="tabs-rail" aria-label="Open Chrome tabs">
+          <div class="tabs-rail-head">
+            <div class="tabs-rail-title"><p class="section-kicker">OPEN PAGES</p><h2>Browser tabs <span id="openTabCount">0</span></h2></div>
+            <div class="tabs-rail-actions">
+              <button id="refreshTabsBtn" class="icon-btn" type="button" aria-label="Refresh open tabs" title="Refresh open tabs">&#8635;</button>
+              <button id="collapseOpenPagesBtn" class="icon-btn" type="button" aria-label="Collapse Open Pages" title="Collapse Open Pages" aria-expanded="true">&#8249;</button>
+            </div>
+          </div>
+          <button id="expandOpenPagesBtn" class="collapsed-open-pages-control" type="button" aria-label="Expand Open Pages" title="Expand Open Pages">
+            <span class="collapsed-open-pages-arrow" aria-hidden="true">&#8250;</span>
+            <span class="collapsed-open-pages-count" id="collapsedOpenTabCount">0</span>
+            <span class="collapsed-open-pages-label">Open Pages</span>
+          </button>
+          <p class="tabs-help">Drag a page into any project. Clicking a saved link jumps to its open tab if it already exists.</p>
+          <button id="openPickerBtn" class="btn btn-secondary compact bookmarks-btn" type="button">Bookmarks</button>
+          <div id="openTabsList" class="open-tabs-list" aria-live="polite"></div>
+        </aside>
+
+        <section class="buckets-area" aria-label="Groups and note panels">
+          <div id="viewHeading" class="view-heading hidden"></div>
+          <section id="bucketGrid" class="bucket-grid" aria-live="polite"></section>
+        </section>
+
+        <aside id="rightRailStack" class="right-rail-stack" aria-label="MeshTab side drawers">
+          <aside id="taskRail" class="task-rail" aria-label="Mesh Tasks">
+          <div class="task-rail-head">
+            <div><p class="section-kicker">MESH TASKS</p><h2><span id="taskTotalCount">0</span> total <small><span id="taskRailOpenCount">0</span> open</small></h2></div>
+            <div class="task-rail-actions">
+              <button id="taskRailAddBtn" class="icon-btn text-icon" type="button" aria-label="Add task" title="Add task">+</button>
+              <button id="collapseTaskRailBtn" class="icon-btn" type="button" aria-label="Collapse Mesh Tasks" title="Collapse Mesh Tasks" aria-expanded="true">&#8250;</button>
+            </div>
+          </div>
+          <button id="expandTaskRailBtn" class="collapsed-task-control" type="button" aria-label="Expand Mesh Tasks" title="Expand Mesh Tasks">
+            <span class="collapsed-task-arrow" aria-hidden="true">&#8249;</span>
+            <span class="collapsed-task-count" id="collapsedTaskCount">0</span>
+            <span class="collapsed-task-label">Mesh Tasks</span>
+          </button>
+          <div id="taskRailCompact" class="task-rail-compact">
+            <label class="task-rail-filter"><span>Show</span><select id="taskRailGroupFilter" aria-label="Filter right-side tasks"></select></label>
+            <div id="taskRailRecommendation" class="task-rail-recommendation"></div>
+            <div id="taskRailOpenList" class="task-compact-list" aria-live="polite"></div>
+          </div>
+          <div id="taskWorkspace" class="task-workspace">
+            <div class="task-workspace-top"><div><p class="section-kicker">TASK CENTER</p><h2>Mesh Tasks <span id="taskWorkspaceTotal">0</span></h2></div><div class="task-workspace-actions"><button id="taskAllocationAddBtn" class="btn btn-secondary compact" type="button">+ Allocation</button><button id="taskCenterAddBtn" class="btn btn-primary compact" type="button">+ Task</button></div></div>
+            <div id="activeTaskTimerBar" class="active-task-timer-bar hidden" role="status">
+              <span class="active-task-timer-dot" aria-hidden="true"></span>
+              <span class="active-task-timer-copy"><small id="activeTaskTimerLabel">WORK CLOCK RUNNING</small><strong id="activeTaskTimerTaskName"></strong></span>
+              <span id="activeTaskTimerReadout" class="active-task-timer-readout">0m 00s</span>
+              <button class="btn btn-primary compact" type="button" data-action="stop-task-timer">Stop</button>
+            </div>
+            <details id="taskAnalyticsSection" class="task-center-section task-center-collapsible task-details-section task-analytics-section">
+              <summary class="task-section-toggle"><div class="task-section-title"><h3>Task Metrics</h3><span id="taskAnalyticsSummary">Task metrics</span></div></summary>
+              <div class="task-collapsible-body">
+                <div class="task-analytics-toolbar">
+                  <details id="taskAnalyticsSettings"><summary>Choose metrics</summary><div class="task-analytics-options">
+                    <label><input type="checkbox" data-task-analytics="open"> Open</label>
+                    <label><input type="checkbox" data-task-analytics="overdue"> Past due</label>
+                    <label><input type="checkbox" data-task-analytics="closed"> Closed</label>
+                    <label><input type="checkbox" data-task-analytics="closedToday"> Closed today</label>
+                    <label><input type="checkbox" data-task-analytics="closedYesterday"> Closed yesterday</label>
+                    <label><input type="checkbox" data-task-analytics="closedThisWeek"> This week</label>
+                    <label><input type="checkbox" data-task-analytics="closedLastWeek"> Last week</label>
+                    <label><input type="checkbox" data-task-analytics="closedThisMonth"> This month</label>
+                    <label><input type="checkbox" data-task-analytics="closedThisYear"> This year</label>
+                  </div></details>
+                </div>
+                <div id="taskAnalyticsGrid" class="task-analytics-grid"></div>
+              </div>
+            </details>
+            <section id="workingTaskSection" class="task-center-section working-task-section"><div class="task-section-head"><div class="task-section-title"><h3>Working</h3><span id="workingTaskSummary">0 active</span></div><button id="recommendTaskBtn" class="btn btn-primary compact" type="button" data-action="toggle-task-recommendations" aria-expanded="false">Recommend next</button></div><p class="task-section-help">Tasks you are actively working right now.</p><section id="nextTaskCard" class="next-task-card recommendation-panel hidden" aria-live="polite"></section><div id="workingTaskList" class="task-list working-task-list"></div></section>
+            <section id="ongoingTaskSection" class="task-center-section ongoing-task-section"><div class="task-section-head"><div class="task-section-title"><h3>Ongoing</h3><span id="ongoingTaskSummary">0 ongoing</span></div></div><p class="task-section-help">Long-running responsibilities such as recurring meetings, support, or continuing assistance.</p><div id="ongoingTaskList" class="task-list ongoing-task-list"></div></section>
+            <details id="taskAllocationsSection" class="task-center-section task-allocations-section task-center-collapsible" open>
+              <summary class="task-section-toggle"><div class="task-section-title"><h3>Allocations</h3><span id="taskAllocationsSummary">0 allocations</span></div></summary>
+              <div class="task-collapsible-body">
+                <div class="task-collapsible-actions"><p class="task-section-help">Create Project, Job, Ticket, or general hour buckets. Task time rolls up automatically to the Task's allocation.</p><button id="taskAllocationSectionTimeLogBtn" class="btn btn-secondary compact" type="button">Time Log</button><button id="taskAllocationSectionAddBtn" class="btn btn-secondary compact" type="button">+ Allocation</button></div>
+                <div id="taskAllocationsGrid" class="task-allocations-grid"></div>
+              </div>
+            </details>
+            <div class="task-center-toolbar"><label><span>Show tasks</span><select id="taskOpenGroupFilter"></select></label></div>
+            <section class="task-center-section todo-task-section"><div class="task-section-head"><h3>To Do</h3><span id="openTaskSummary"></span></div><div id="openTaskList" class="task-list"></div></section>
+            <section class="task-center-section completed-section">
+              <div class="task-section-head"><h3>Closed</h3><span id="completedTaskSummary"></span></div>
+              <div class="task-report-controls"><select id="taskReportRange"><option value="week">This week</option><option value="lastweek">Last week</option><option value="month">This month</option><option value="year">This year</option><option value="custom">Custom</option></select><div id="taskCustomRange" class="task-custom-range hidden"><input id="taskReportStart" type="date" aria-label="Report start date"><span>to</span><input id="taskReportEnd" type="date" aria-label="Report end date"></div></div>
+              <div id="completedSelectionSummary" class="completed-selection-summary">Click completed tasks to total a subset.</div>
+              <div id="completedTaskList" class="task-list completed-task-list"></div>
+            </section>
+          </div>
+          </aside>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <span>&copy; 2026 &middot; Written by&nbsp;Tim Place,&nbsp;TP-Soft, LLC.</span>
+      <a class="footer-link" href="about.html" target="_blank" rel="noopener">About</a>
+      <span class="version-badge" id="versionNumber">v1.41.0</span>
+    </footer>
+  </div>
+
+  <dialog id="bucketDialog" class="dialog">
+    <form id="bucketForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker" id="bucketDialogKicker">NEW GROUP</p><h2 id="bucketDialogTitle">Create a Group</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="bucketDialog" aria-label="Close">x</button>
+      </div>
+      <label><span>Name</span><input id="bucketName" name="bucketName" maxlength="60" placeholder="e.g. Apollo Launch" required autofocus></label>
+      <label><span>Location</span><select id="bucketParent" name="bucketParent" aria-label="Group location"></select></label>
+      <fieldset class="color-options">
+        <legend>Accent</legend>
+        <label><input type="radio" name="bucketColor" value="violet" checked><span class="swatch violet"></span><span class="sr-only">Violet</span></label>
+        <label><input type="radio" name="bucketColor" value="blue"><span class="swatch blue"></span><span class="sr-only">Blue</span></label>
+        <label><input type="radio" name="bucketColor" value="green"><span class="swatch green"></span><span class="sr-only">Green</span></label>
+        <label><input type="radio" name="bucketColor" value="orange"><span class="swatch orange"></span><span class="sr-only">Orange</span></label>
+        <label><input type="radio" name="bucketColor" value="rose"><span class="swatch rose"></span><span class="sr-only">Rose</span></label>
+        <label class="color-option-custom">
+          <input type="radio" name="bucketColor" value="custom" id="bucketColorCustomRadio">
+          <input type="color" id="bucketColorCustomInput" class="swatch swatch-custom" value="#6e49ff" aria-label="Custom color" title="Choose a custom color">
+        </label>
+      </fieldset>
+      <div class="dialog-actions"><button value="cancel" class="btn btn-ghost" type="button" data-close-dialog="bucketDialog">Cancel</button><button class="btn btn-primary" id="bucketSubmitBtn" type="submit">Create</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="noteDialog" class="dialog note-dialog">
+    <form id="noteForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">NOTE PANEL</p><h2 id="noteDialogTitle">Create a note</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="noteDialog" aria-label="Close">x</button>
+      </div>
+      <label id="noteExistingWrap"><span>New or existing note</span><select id="noteExistingSelect" aria-label="Create a new note or edit an existing note"></select></label>
+      <div class="form-grid note-location-grid">
+        <label><span>Note title</span><input id="noteTitle" type="text" maxlength="100" placeholder="Key information" required></label>
+        <label><span>Location</span><select id="noteLocation" aria-label="Note location"></select></label>
+      </div>
+      <label id="noteNewTabWrap" class="hidden"><span>New Tab name</span><input id="noteNewTabName" type="text" maxlength="60" placeholder="e.g. Client Alpha"></label>
+      <label class="note-mask-option">
+        <input id="noteMasked" type="checkbox">
+        <span><strong>Mask this note</strong><small>Hide its contents until the eye icon is clicked. This is visual privacy, not encryption.</small></span>
+      </label>
+      <label class="note-editor-label" for="noteEditor"><span>Contents</span></label>
+      <div class="note-toolbar" role="toolbar" aria-label="Note formatting" aria-controls="noteEditor">
+        <button type="button" class="note-toolbar-btn" data-note-format="insertUnorderedList" title="Bullet list">• Bullets</button>
+      </div>
+      <div id="noteEditor" class="note-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Type a note, or paste text and pictures here..."></div>
+      <p class="note-editor-help">Paste screenshots, pictures, or bulleted lists directly into the note. Images are stored locally with MeshTab.</p>
+      <div class="dialog-actions"><button value="cancel" class="btn btn-ghost" type="button" data-close-dialog="noteDialog">Cancel</button><button class="btn btn-primary" id="noteSubmitBtn" type="submit">Create note</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskDialog" class="dialog task-dialog">
+    <form id="taskForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK</p><h2 id="taskDialogTitle">Create a task</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskDialog" aria-label="Close">x</button>
+      </div>
+      <label><span>Task</span><input id="taskTitle" type="text" maxlength="140" placeholder="What needs to get done?" required></label>
+      <label class="task-details-label"><span>Details</span><textarea id="taskDetails" rows="3" maxlength="1600" placeholder="Optional context, links, or acceptance notes"></textarea></label>
+      <div class="form-grid task-form-grid">
+        <label><span>Task Group</span><select id="taskGroup"></select></label>
+        <label><span>Allocation</span><select id="taskAllocation"><option value="">No allocation</option></select></label>
+      </div>
+      <div class="form-grid task-form-grid">
+        <label><span>Priority</span><select id="taskPriority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label>
+        <label><span>Status</span><select id="taskWorkState"><option value="todo">To Do</option><option value="working">Working</option><option value="ongoing">Ongoing</option><option value="closed">Closed</option></select></label>
+      </div>
+      <label class="task-due-label"><span>Due date</span><input id="taskDueDate" type="date"></label>
+      <div class="task-aging-note"><strong>Smart urgency</strong><span>MeshTab combines your priority, age, and due date to recommend what to work on next. Your chosen priority is never silently changed.</span></div>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="taskDialog">Cancel</button><button class="btn btn-primary" id="taskSubmitBtn" type="submit">Create task</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskCompleteDialog" class="dialog task-dialog">
+    <form id="taskCompleteForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">COMPLETE TASK</p><h2 id="taskCompleteTitle">Close task</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskCompleteDialog" aria-label="Close">x</button>
+      </div>
+      <section class="task-time-history-block"><div class="task-time-history-head"><strong>Time logged so far</strong><span id="taskCompletionTimeSummary">0 entries · 0 min total</span></div><div id="taskCompletionTimeHistory" class="task-time-history"></div></section><div id="taskCompletionAllocationHint" class="task-allocation-time-hint"></div>
+      <label><span>Closure notes</span><textarea id="taskClosureNotes" rows="5" maxlength="2200" placeholder="What was completed, learned, delivered, or handed off?"></textarea></label>
+      <div class="task-final-time"><strong>Add final time <small>(optional)</small></strong><div class="task-time-entry task-time-entry-with-date">
+        <label><span>Work date</span><input id="taskCompletionTimeDate" type="date"></label>
+        <label><span>Amount</span><input id="taskMinutesSpent" type="number" min="0" max="100000" step="any" placeholder="e.g. 1"></label>
+        <label><span>Unit</span><select id="taskTimeUnit"><option value="hours">Hours</option><option value="minutes">Minutes</option></select></label>
+      </div><label><span>Time details</span><input id="taskCompletionTimeDetails" type="text" maxlength="1200" placeholder="Optional: what did this final block cover?"></label></div>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="taskCompleteDialog">Cancel</button><button class="btn btn-primary" type="submit">Mark done</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskAllocationDialog" class="dialog task-dialog task-allocation-dialog">
+    <form id="taskAllocationForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK ALLOCATION</p><h2 id="taskAllocationDialogTitle">Create allocation</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskAllocationDialog" aria-label="Close">x</button>
+      </div>
+      <div class="form-grid task-form-grid">
+        <label><span>Name</span><input id="taskAllocationName" type="text" maxlength="140" placeholder="e.g. Client Alpha Support" required></label>
+        <label><span>Type</span><select id="taskAllocationType"><option value="project">Project</option><option value="job">Job</option><option value="ticket">Ticket</option><option value="bucket">Bucket</option></select></label>
+      </div>
+      <div class="form-grid task-form-grid">
+        <label><span>Reference <small>(optional)</small></span><input id="taskAllocationReference" type="text" maxlength="120" placeholder="Job number, ticket number, project code, etc."></label>
+        <label><span>Group / Tab</span><select id="taskAllocationGroup" aria-label="Allocation group"></select></label>
+      </div>
+      <div class="form-grid task-allocation-budget-grid">
+        <label><span>Time model</span><select id="taskAllocationMode"><option value="unlimited">Open bucket / track only</option><option value="total">Total hours</option><option value="recurring">Recurring hours</option></select></label>
+        <label id="taskAllocationHoursWrap"><span id="taskAllocationHoursLabel">Hours</span><input id="taskAllocationHours" type="number" min="0.25" max="100000" step="any" value="10"></label>
+        <label id="taskAllocationUnitWrap"><span>Unit</span><select id="taskAllocationUnit"><option value="hours">Hours</option><option value="minutes">Minutes</option></select></label>
+      </div>
+      <label id="taskAllocationCadenceWrap" class="hidden"><span>Replenish</span><select id="taskAllocationCadence"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option></select></label>
+      <div class="form-grid task-form-grid">
+        <label><span>Start date <small>(optional)</small></span><input id="taskAllocationStartDate" type="date"></label>
+        <label><span>End date <small>(optional)</small></span><input id="taskAllocationEndDate" type="date"></label>
+      </div>
+      <label><span>Details <small>(optional)</small></span><textarea id="taskAllocationDetails" rows="4" maxlength="2400" placeholder="Scope, customer, contract details, billing notes, or other context"></textarea></label>
+      <label class="settings-check allocation-active-check"><input id="taskAllocationActive" type="checkbox" checked><span><strong>Allocation active</strong><small>Inactive allocations remain in history but are marked paused.</small></span></label>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="taskAllocationDialog">Cancel</button><button class="btn btn-primary" id="taskAllocationSubmitBtn" type="submit">Create allocation</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskAllocationHistoryDialog" class="dialog task-dialog task-allocation-history-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">ALLOCATION USAGE</p><h2 id="taskAllocationHistoryTitle">Allocation usage</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskAllocationHistoryDialog" aria-label="Close">x</button>
+      </div>
+      <div id="taskAllocationHistorySummary" class="allocation-history-summary"></div>
+      <div class="allocation-history-head"><span>Period</span><span>Budget</span><span>Logged</span><span>Remaining / Over</span><span>Task detail</span></div>
+      <div id="taskAllocationHistoryList" class="allocation-history-list"></div>
+      <div class="dialog-actions"><button id="taskAllocationHistoryTimeLogBtn" class="btn btn-secondary" type="button">Time Log</button><button id="taskAllocationHistoryEditBtn" class="btn btn-secondary" type="button">Edit allocation</button><button class="btn btn-primary" type="button" data-close-dialog="taskAllocationHistoryDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="taskAllocationTimeLogDialog" class="dialog task-dialog task-allocation-time-log-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">ALLOCATION TIME LOG</p><h2 id="taskAllocationTimeLogTitle">Allocation time log</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskAllocationTimeLogDialog" aria-label="Close">x</button>
+      </div>
+      <div id="taskAllocationTimeLogSummary" class="allocation-history-summary"></div>
+      <div class="allocation-time-log-toolbar">
+        <label><span>Time frame</span><select id="taskAllocationTimeLogFilter" aria-label="Allocation time log time frame"></select></label>
+        <div id="taskAllocationTimeLogCustomRange" class="allocation-time-log-custom hidden">
+          <label><span>Start</span><input id="taskAllocationTimeLogStart" type="date"></label>
+          <label><span>End</span><input id="taskAllocationTimeLogEnd" type="date"></label>
+        </div>
+      </div>
+      <div class="all-time-entries-view-row">
+        <label class="all-time-entries-groupby"><span>Group by</span>
+          <select id="taskAllocationTimeLogGroupBy" aria-label="Group allocation time entries">
+            <option value="none">Running record</option>
+            <option value="task">Task</option>
+            <option value="day">Day</option>
+          </select>
+        </label>
+        <label id="taskAllocationTimeLogSplitByDayWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="taskAllocationTimeLogSplitByDay" type="checkbox"><span>Also split by day</span>
+        </label>
+        <label id="taskAllocationTimeLogSplitByTaskWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="taskAllocationTimeLogSplitByTask" type="checkbox"><span>Also split by task</span>
+        </label>
+        <label id="taskAllocationTimeLogCombineDescWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="taskAllocationTimeLogCombineDesc" type="checkbox"><span>Combine descriptions</span>
+        </label>
+        <label id="taskAllocationTimeLogDescLimitWrap" class="all-time-entries-desc-limit hidden">
+          <span>Limit</span><input id="taskAllocationTimeLogDescLimit" type="number" min="20" max="20000" step="10" value="500"><span>chars</span>
+        </label>
+        <label id="taskAllocationTimeLogChartToggleWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="taskAllocationTimeLogChartToggle" type="checkbox" checked><span>Show chart</span>
+        </label>
+      </div>
+      <div id="taskAllocationTimeLogChart" class="all-time-entries-chart hidden"></div>
+      <div class="allocation-time-log-head" id="taskAllocationTimeLogHead"><span>Date / Time</span><span>Task</span><span>Duration</span><span>Details</span></div>
+      <div id="taskAllocationTimeLogList" class="allocation-time-log-list"></div>
+      <div class="dialog-actions"><button id="taskAllocationTimeLogUsageBtn" class="btn btn-secondary" type="button">Usage</button><button id="taskAllocationTimeLogEditBtn" class="btn btn-secondary" type="button">Edit allocation</button><button class="btn btn-primary" type="button" data-close-dialog="taskAllocationTimeLogDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="allTimeEntriesDialog" class="dialog task-dialog task-allocation-time-log-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TIME LOG</p><h2>All time entries</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="allTimeEntriesDialog" aria-label="Close">x</button>
+      </div>
+      <div id="allTimeEntriesSummary" class="allocation-history-summary"></div>
+      <div class="allocation-time-log-toolbar">
+        <label><span>Time frame</span><select id="allTimeEntriesFilter" aria-label="All time entries time frame"></select></label>
+        <div id="allTimeEntriesCustomRange" class="allocation-time-log-custom hidden">
+          <label><span>Start</span><input id="allTimeEntriesStart" type="date"></label>
+          <label><span>End</span><input id="allTimeEntriesEnd" type="date"></label>
+        </div>
+      </div>
+      <div class="all-time-entries-view-row">
+        <label class="all-time-entries-groupby"><span>Group by</span>
+          <select id="allTimeEntriesGroupBy" aria-label="Group time entries">
+            <option value="none">Running record</option>
+            <option value="task">Task</option>
+            <option value="allocation">Project / Allocation</option>
+            <option value="day">Day</option>
+          </select>
+        </label>
+        <label id="allTimeEntriesSplitByDayWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="allTimeEntriesSplitByDay" type="checkbox"><span>Also split by day</span>
+        </label>
+        <label id="allTimeEntriesSplitByProjectWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="allTimeEntriesSplitByProject" type="checkbox"><span>Also split by project</span>
+        </label>
+        <label id="allTimeEntriesCombineDescWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="allTimeEntriesCombineDesc" type="checkbox"><span>Combine descriptions</span>
+        </label>
+        <label id="allTimeEntriesDescLimitWrap" class="all-time-entries-desc-limit hidden">
+          <span>Limit</span><input id="allTimeEntriesDescLimit" type="number" min="20" max="20000" step="10" value="500"><span>chars</span>
+        </label>
+        <label id="allTimeEntriesChartToggleWrap" class="all-time-entries-chart-toggle hidden">
+          <input id="allTimeEntriesChartToggle" type="checkbox" checked><span>Show chart</span>
+        </label>
+      </div>
+      <div id="allTimeEntriesChart" class="all-time-entries-chart hidden"></div>
+      <div class="allocation-time-log-head all-time-entries-head" id="allTimeEntriesHead"><span>Date / Time</span><span>Task</span><span>Allocation</span><span>Duration</span><span>Details</span></div>
+      <div id="allTimeEntriesList" class="allocation-time-log-list"></div>
+      <div class="dialog-actions"><button class="btn btn-primary" type="button" data-close-dialog="allTimeEntriesDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="taskTimeDialog" class="dialog task-dialog task-time-dialog">
+    <form id="taskTimeForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK TIME</p><h2 id="taskTimeDialogTitle">Add time</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskTimeDialog" aria-label="Close">x</button>
+      </div>
+      <div class="task-time-current"><span>Logged so far</span><strong id="taskTimeHistorySummary">0 entries · 0 min total</strong></div><div id="taskTimeAllocationHint" class="task-allocation-time-hint"></div>
+      <div id="taskTimePresets" class="task-time-presets" aria-label="Quick time choices">
+        <button type="button" data-time-minutes="60">1 hour</button><button type="button" data-time-minutes="30">30 minutes</button><button type="button" data-time-minutes="120">2 hours</button><button type="button" data-time-minutes="240">4 hours</button><button type="button" data-time-minutes="360">6 hours</button><button type="button" data-time-minutes="480">8 hours</button>
+      </div>
+      <div class="task-time-entry task-time-entry-with-date"><label><span>Work date</span><input id="taskTimeDate" type="date" required></label><label><span>Custom amount</span><input id="taskTimeAmount" type="number" min="0" max="100000" step="any" placeholder="e.g. 1.5" required></label><label><span>Unit</span><select id="taskTimeUnitQuick"><option value="hours">Hours</option><option value="minutes">Minutes</option></select></label></div>
+      <label><span>Work details <small>(optional)</small></span><textarea id="taskTimeDetails" rows="3" maxlength="1200" placeholder="What did you work on during this time?"></textarea></label>
+      <section class="task-time-history-block"><div class="task-time-history-head"><strong>Time history</strong></div><div id="taskTimeHistory" class="task-time-history"></div></section>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="taskTimeDialog">Cancel</button><button id="taskTimeSubmitBtn" class="btn btn-primary" type="submit">Add time</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskTimeHistoryDialog" class="dialog task-dialog task-history-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK TIME</p><h2 id="taskTimeHistoryTitle">Time history</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskTimeHistoryDialog" aria-label="Close">x</button>
+      </div>
+      <div class="task-history-toolbar"><strong id="taskTimeHistoryViewSummary">0 entries · 0 min total</strong><button id="taskTimeHistoryAddBtn" class="btn btn-primary compact" type="button">+ Time</button></div>
+      <div class="task-time-list-head" aria-hidden="true"><span>Date</span><span>Time</span><span>Duration</span><span>Details</span><span>Actions</span></div>
+      <div id="taskTimeHistoryList" class="task-time-history-list"></div>
+      <div class="dialog-actions"><button class="btn btn-primary" type="button" data-close-dialog="taskTimeHistoryDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="taskNotesDialog" class="dialog task-dialog task-notes-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK NOTES</p><h2 id="taskNotesTitle">Task notes</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskNotesDialog" aria-label="Close">x</button>
+      </div>
+      <div class="task-notes-toolbar"><strong id="taskNotesSummary">0 notes</strong><button id="taskNotesAddBtn" class="btn btn-primary compact" type="button">+ Note</button></div>
+      <div id="taskNotesList" class="task-notes-list" aria-live="polite"></div>
+      <div class="dialog-actions"><button class="btn btn-primary" type="button" data-close-dialog="taskNotesDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="taskNoteDialog" class="dialog task-dialog task-note-dialog">
+    <form id="taskNoteForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK NOTE</p><h2 id="taskNoteDialogTitle">Add task note</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskNoteDialog" aria-label="Close">x</button>
+      </div>
+      <div id="taskNoteMeta" class="task-note-meta">Create a detailed note connected only to this task.</div>
+      <label><span>Title</span><input id="taskNoteTitle" type="text" maxlength="160" placeholder="Short note title"></label>
+      <label><span>Note</span><textarea id="taskNoteBody" rows="12" maxlength="12000" placeholder="Add the full details, status, research, decisions, links, or follow-up information..."></textarea></label>
+      <div class="dialog-actions task-note-dialog-actions"><button id="taskNoteDeleteBtn" class="btn btn-ghost danger-text" type="button" hidden>Delete note</button><span class="dialog-action-spacer"></span><button class="btn btn-ghost" type="button" data-close-dialog="taskNoteDialog">Cancel</button><button class="btn btn-primary" id="taskNoteSubmitBtn" type="submit">Add note</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="taskLinksDialog" class="dialog task-dialog task-notes-dialog task-links-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">TASK LINKS</p><h2 id="taskLinksTitle">Task links</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="taskLinksDialog" aria-label="Close">x</button>
+      </div>
+      <div class="task-notes-toolbar"><strong id="taskLinksSummary">0 links</strong><button id="taskLinkBrowseToggle" class="btn btn-secondary compact" type="button">Browse open tabs &amp; bookmarks</button></div>
+      <div id="taskLinkBrowsePanel" class="task-link-browse-panel hidden">
+        <div class="picker-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+          <input id="taskLinkBrowseSearch" type="search" placeholder="Search open tabs and bookmarks..." autocomplete="off">
+        </div>
+        <p class="task-link-browse-label">Open tabs</p>
+        <div id="taskLinkOpenTabsResults" class="task-link-browse-list"></div>
+        <p class="task-link-browse-label">Chrome bookmarks</p>
+        <div id="taskLinkBookmarkResults" class="task-link-browse-list"></div>
+      </div>
+      <form id="taskLinkForm" class="url-form task-link-add-form"><input id="taskLinkTitle" type="text" placeholder="Label (optional)" maxlength="160"><input id="taskLinkUrl" type="text" placeholder="https://example.com" required><button class="btn btn-primary" type="submit">+ Link</button></form>
+      <div id="taskLinksList" class="task-links-list" aria-live="polite"></div>
+      <div class="dialog-actions"><button class="btn btn-primary" type="button" data-close-dialog="taskLinksDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="reminderDialog" class="dialog reminder-dialog">
+    <form id="reminderForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">REMINDER</p><h2 id="reminderDialogTitle">Create a reminder</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="reminderDialog" aria-label="Close">x</button>
+      </div>
+      <label><span>Reminder</span><input id="reminderTitle" type="text" maxlength="140" placeholder="What should MeshTab remind you about?" required></label>
+      <label><span>Details</span><textarea id="reminderDetails" rows="3" maxlength="1600" placeholder="Optional context or what you want to check"></textarea></label>
+      <label><span>Linked Task <small>(optional)</small></span><select id="reminderLinkedTask"><option value="">No linked task</option></select></label>
+      <div class="form-grid reminder-form-grid">
+        <label><span>Schedule</span><select id="reminderScheduleType"><option value="once">One time</option><option value="daily">Daily</option><option value="selected-days">Selected days</option></select></label>
+        <label><span>Time</span><input id="reminderTime" type="time" required></label>
+      </div>
+      <label id="reminderDateWrap"><span>Date</span><input id="reminderDate" type="date"></label>
+      <fieldset id="reminderDaysWrap" class="reminder-days hidden"><legend>Repeat on</legend>
+        <label><input type="checkbox" value="1">Mon</label><label><input type="checkbox" value="2">Tue</label><label><input type="checkbox" value="3">Wed</label><label><input type="checkbox" value="4">Thu</label><label><input type="checkbox" value="5">Fri</label><label><input type="checkbox" value="6">Sat</label><label><input type="checkbox" value="0">Sun</label>
+      </fieldset>
+      <label class="reminder-enabled"><input id="reminderEnabled" type="checkbox" checked><span>Reminder enabled</span></label>
+      <p class="dialog-help">MeshTab uses Chrome system notifications. Notification snooze buttons offer 10 and 15 minutes; the Reminders screen includes additional snooze choices.</p>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="reminderDialog">Cancel</button><button class="btn btn-primary" id="reminderSubmitBtn" type="submit">Create reminder</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog id="workClockDialog" class="dialog work-clock-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading"><div><p class="section-kicker">WORK CLOCK</p><h2>Start / Pause / Stop Work Clock</h2></div><button class="icon-btn" type="button" data-close-dialog="workClockDialog" aria-label="Close">x</button></div>
+      <div id="workClockStatus" class="work-clock-status">Clock is stopped</div>
+      <div class="work-clock-readout">
+        <div><span>Actual time</span><strong id="workClockActual">0m 00s</strong></div>
+        <div><span>Rounded ½ hour</span><strong id="workClockHalf">0m</strong></div>
+        <div><span>Rounded hour</span><strong id="workClockHour">0m</strong></div>
+      </div>
+      <div class="work-clock-start-offset"><label for="workClockStartOffsetMinutes"><span>Start offset</span><div><input id="workClockStartOffsetMinutes" type="number" min="0" max="1440" step="1" value="0" inputmode="numeric"><span>minutes already worked</span></div><small>Use this when you started working before you remembered to start the clock.</small></label></div>
+      <div class="work-clock-actions"><button id="workClockStartBtn" class="btn btn-primary" type="button">Start timer</button><button id="workClockPauseBtn" class="btn btn-secondary" type="button" disabled>Pause timer</button><button id="workClockStopBtn" class="btn btn-secondary" type="button">Stop timer</button></div>
+      <section class="work-clock-history-block"><div class="work-clock-history-toolbar"><button id="workClockSummaryBtn" class="work-clock-history-summary-link" type="button"><span><strong>Recent sessions</strong><small>Click for session history</small></span><span>Select a session to see its exact details.</span></button><button id="workClockClearAllBtn" class="btn btn-ghost compact work-clock-clear-all" type="button">Clear all</button></div><div id="workClockHistory" class="work-clock-history"></div></section>
+      <div class="dialog-actions"><button class="btn btn-primary" type="button" data-close-dialog="workClockDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="workClockSummaryDialog" class="dialog work-clock-summary-dialog">
+    <div class="dialog-card">
+      <div class="dialog-heading"><div><p class="section-kicker">WORK CLOCK</p><h2 id="workClockSummaryTitle">Recent Sessions</h2></div><button class="icon-btn" type="button" data-close-dialog="workClockSummaryDialog" aria-label="Close">x</button></div>
+      <div id="workClockSummaryRange" class="work-clock-summary-range">Most recent completed sessions</div>
+      <div id="workClockSummaryCards" class="work-clock-summary-cards hidden"></div>
+      <div id="workClockSummaryListHead" class="work-clock-summary-list-head"><span>Date</span><span>Time</span><span>Actual</span><span>½ Hour</span><span>Hour</span><span>Clear</span></div>
+      <div id="workClockSummaryList" class="work-clock-summary-list"></div>
+      <div class="dialog-actions work-clock-summary-actions"><button id="workClockClearAllSummaryBtn" class="btn btn-ghost" type="button">Clear all sessions</button><button class="btn btn-primary" type="button" data-close-dialog="workClockSummaryDialog">Done</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="calendarTabDialog" class="dialog calendar-tab-dialog">
+    <form id="calendarTabForm" class="dialog-card">
+      <input id="calendarTabId" type="hidden">
+      <div class="dialog-heading"><div><p class="section-kicker">CALENDAR TAB</p><h2 id="calendarTabDialogTitle">Add Google Calendar Tab</h2></div><button class="icon-btn" type="button" data-close-dialog="calendarTabDialog" aria-label="Close">x</button></div>
+      <label><span>Tab name</span><input id="calendarTabTitle" type="text" maxlength="60" value="Calendar" required></label>
+      <label><span>Google Calendar embed</span><textarea id="calendarTabEmbed" rows="3" placeholder="Paste the Google Calendar embed URL, iframe embed code, or Calendar ID" required></textarea></label>
+      <p class="dialog-help">In Google Calendar on a computer, open Settings → your calendar → Integrate calendar and copy the Embed code. Calendar visibility still follows that calendar's Google sharing permissions.</p>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="calendarTabDialog">Cancel</button><button id="calendarTabSubmitBtn" class="btn btn-primary" type="submit">Create Calendar Tab</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="siteOverlayDialog" class="dialog site-overlay-dialog">
+    <form id="siteOverlayForm" class="dialog-card">
+      <div class="dialog-heading"><div><p class="section-kicker">WEBSITE OVERLAY</p><h2 id="siteOverlayDialogTitle">Add Website Overlay</h2></div><button class="icon-btn" type="button" data-close-dialog="siteOverlayDialog" aria-label="Close">x</button></div>
+      <div class="site-overlay-editor-grid">
+        <div class="site-overlay-editor-fields">
+          <div class="site-overlay-main-grid">
+            <label><span>Overlay name</span><input id="siteOverlayName" type="text" maxlength="80" value="Website Overlay" required><small>This is the text shown on the website.</small></label>
+            <label><span>Show overlay on</span><select id="siteOverlayTargetMode"><option value="site" selected>Website domain / page</option><option value="all-sites">All websites in Chrome</option></select><small>All websites applies to normal http/https pages. Chrome internal pages do not allow extension overlays.</small></label>
+            <label class="site-overlay-domain-field"><span>Website domain or page</span><div class="site-overlay-domain-row"><input id="siteOverlayHost" type="text" placeholder="example.com or https://example.com/page" required><button id="siteOverlayUseActivePageBtn" class="btn btn-secondary compact" type="button">Use recent page</button></div><small>Enter a domain for every page on that site, or paste a page URL/path to show only on that page.</small></label>
+          </div>
+          <div class="site-overlay-toggle-row">
+            <label class="site-overlay-check"><input id="siteOverlayIncludeSubdomains" type="checkbox"><span>Also show on subdomains</span></label>
+            <label class="site-overlay-check"><input id="siteOverlayEnabled" type="checkbox" checked><span>This overlay is enabled</span></label>
+            <label class="site-overlay-check"><input id="siteOverlayCornerDocking" type="checkbox"><span>Allow corner docking</span></label>
+          </div>
+          <div class="site-overlay-field-grid">
+            <label><span>Text color</span><input id="siteOverlayTextColor" type="color" value="#ffffff"></label>
+            <label><span>Background</span><input id="siteOverlayBackgroundColor" type="color" value="#6e49ff"></label>
+            <label><span>Font</span><select id="siteOverlayFont"><option value="system">System</option><option value="sans">Sans</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label>
+            <label><span>Font size</span><input id="siteOverlayFontSize" type="number" min="8" max="48" step="1" value="16"></label>
+            <label><span>Width (px)</span><input id="siteOverlayWidth" type="number" min="80" max="520" step="1" value="180"></label>
+            <label><span>Height (px)</span><input id="siteOverlayHeight" type="number" min="28" max="280" step="1" value="44"></label>
+            <label><span>Shape</span><select id="siteOverlayShape"><option value="rectangle">Rectangle</option><option value="rounded" selected>Rounded</option><option value="pill">Pill</option><option value="half-rounded">Half Rounded</option><option value="half-pill">Half Pill</option><option value="half-oval">Half Oval</option></select></label>
+            <label><span>Starting edge</span><select id="siteOverlayEdge"><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option></select></label>
+          </div>
+          <label class="site-overlay-position-row" for="siteOverlayEdgePosition"><span><strong>Starting position on edge</strong><output id="siteOverlayEdgePositionValue">50%</output></span><input id="siteOverlayEdgePosition" type="range" min="0" max="100" step="1" value="50"><small>Corner docking only activates when “Allow corner docking” is enabled. Otherwise the overlay stays intact on the selected edge.</small></label>
+        </div>
+        <div class="site-overlay-editor-preview"><span>Preview</span><div id="siteOverlayLivePreview" class="site-overlay-live-preview">Website Overlay</div><small>On a website, drag the overlay along any edge. Half shapes sit flush to the page edge; optional corner docking creates the angled corner treatment.</small></div>
+      </div>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="siteOverlayDialog">Cancel</button><button id="siteOverlaySubmitBtn" class="btn btn-primary" type="submit">Create Overlay</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="siteLinkOverlayDialog" class="dialog site-link-overlay-dialog">
+    <form id="siteLinkOverlayForm" class="dialog-card">
+      <div class="dialog-heading"><div><p class="section-kicker">MESHTAB LINK OVERLAY</p><h2 id="siteLinkOverlayDialogTitle">Add MeshTab Link Overlay</h2></div><button class="icon-btn" type="button" data-close-dialog="siteLinkOverlayDialog" aria-label="Close">x</button></div>
+      <div class="site-link-overlay-grid">
+        <div class="site-link-overlay-fields">
+          <div class="site-overlay-main-grid">
+            <label><span>Overlay name</span><input id="siteLinkOverlayName" type="text" maxlength="80" value="MeshTab Links" required></label>
+            <label><span>Show overlay on</span><select id="siteLinkOverlayTargetMode"><option value="site" selected>Website domain / page</option><option value="all-sites">All websites in Chrome</option></select><small>All websites applies to normal http/https pages. Chrome internal pages do not allow extension overlays.</small></label>
+            <label class="site-overlay-domain-field"><span>Website domain or page</span><div class="site-overlay-domain-row"><input id="siteLinkOverlayHost" type="text" placeholder="example.com or https://example.com/page" required><button id="siteLinkOverlayUseActivePageBtn" class="btn btn-secondary compact" type="button">Use recent page</button></div><small>Enter a domain for every page on that site, or paste a page URL/path to limit this MeshTab Link to that page.</small></label>
+          </div>
+          <div class="site-overlay-toggle-row">
+            <label class="site-overlay-check"><input id="siteLinkOverlayIncludeSubdomains" type="checkbox"><span>Also show on subdomains</span></label>
+            <label class="site-overlay-check"><input id="siteLinkOverlayEnabled" type="checkbox" checked><span>This overlay is enabled</span></label>
+            <label class="site-overlay-check"><input id="siteLinkOverlayCornerDocking" type="checkbox"><span>Allow corner docking</span></label>
+          </div>
+          <div class="site-link-overlay-options">
+            <label><span>MeshTab Tab</span><select id="siteLinkOverlayDesktop" required></select><small>The panel reads the current Groups, bookmarks, and open Tasks assigned to this Tab.</small></label>
+            <label><span>Open links in</span><select id="siteLinkOverlayOpenMode"><option value="same-tab">Same tab / current page</option><option value="new-tab">New tab</option><option value="new-window">New window</option></select></label>
+            <label><span>Starting edge</span><select id="siteLinkOverlayEdge"><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option></select></label>
+          </div>
+          <div class="site-link-overlay-icon-row">
+            <label><span>Icon color</span><input id="siteLinkOverlayIconColor" type="color" value="#7048ff"></label>
+            <label class="site-link-overlay-icon-upload"><span>Custom icon</span><input id="siteLinkOverlayIconUpload" type="file" accept="image/*"><small>Replaces the icon with your own image.</small></label>
+            <button id="siteLinkOverlayRemoveIconBtn" class="btn btn-ghost compact hidden" type="button">Remove custom icon</button>
+          </div>
+          <label class="site-overlay-position-row" for="siteLinkOverlayOpacity"><span><strong>Overlay opacity</strong><output id="siteLinkOverlayOpacityValue">100%</output></span><input id="siteLinkOverlayOpacity" type="range" min="10" max="100" step="1" value="100"><small>Lower opacity blends the floating badge more with the page behind it. The link panel itself always opens fully visible.</small></label>
+          <label class="site-overlay-position-row" for="siteLinkOverlayEdgePosition"><span><strong>Starting position on edge</strong><output id="siteLinkOverlayEdgePositionValue">50%</output></span><input id="siteLinkOverlayEdgePosition" type="range" min="0" max="100" step="1" value="50"><small>Drag the MeshTab badge later to move it along any edge. Corner docking only activates when enabled above.</small></label>
+        </div>
+        <div class="site-link-overlay-preview-pane"><span>Preview</span><div id="siteLinkOverlayLivePreview" class="site-link-overlay-live-preview"><span class="meshtab-mini-logo"><i></i><i></i><i></i><i></i></span></div><strong id="siteLinkOverlayPreviewCaption">MeshTab Tab · Same tab</strong><small>Click the badge to open links, Tasks, and start or resume the Work Clock. An active clock appears separately with Pause/Resume and Stop and can still be dragged anywhere.</small></div>
+      </div>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="siteLinkOverlayDialog">Cancel</button><button id="siteLinkOverlaySubmitBtn" class="btn btn-primary" type="submit">Create Link Overlay</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="importSelectionDialog" class="dialog import-selection-dialog">
+    <form id="importSelectionForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">IMPORT</p><h2>Select what to import</h2><p id="importSelectionSource" class="import-selection-source"></p></div>
+        <button class="icon-btn" type="button" data-close-dialog="importSelectionDialog" aria-label="Close">x</button>
+      </div>
+      <div class="import-selection-toolbar">
+        <button id="importSelectAllBtn" class="btn btn-secondary compact" type="button">Select all</button>
+        <button id="importClearAllBtn" class="btn btn-ghost compact" type="button">Clear all</button>
+      </div>
+      <div class="import-selection-options">
+        <label class="import-selection-option"><input id="importSelectWorkspace" type="checkbox"><span><strong>Tabs &amp; Groups</strong><small id="importWorkspaceCount">Workspace structure</small></span></label>
+        <label class="import-selection-option"><input id="importSelectLinks" type="checkbox"><span><strong>Saved Links</strong><small id="importLinksCount">Links inside imported Groups</small></span></label>
+        <label class="import-selection-option"><input id="importSelectNotes" type="checkbox"><span><strong>Notes</strong><small id="importNotesCount">General and Tab Notes</small></span></label>
+        <label class="import-selection-option"><input id="importSelectAllocations" type="checkbox"><span><strong>Allocations</strong><small id="importAllocationsCount">Projects, Jobs, Tickets and Buckets</small></span></label>
+        <label class="import-selection-option"><input id="importSelectTasks" type="checkbox"><span><strong>Tasks</strong><small id="importTasksCount">Tasks, Working state, time entries and Task Notes</small></span></label>
+        <label class="import-selection-option"><input id="importSelectReminders" type="checkbox"><span><strong>Reminders</strong><small id="importRemindersCount">Reminder schedules and links to imported Tasks</small></span></label>
+        <label class="import-selection-option"><input id="importSelectWorkClock" type="checkbox"><span><strong>Work Clock</strong><small id="importWorkClockCount">Timer sessions and running clock state</small></span></label>
+        <label class="import-selection-option"><input id="importSelectSiteOverlays" type="checkbox"><span><strong>Website Overlays</strong><small id="importSiteOverlaysCount">Visual and MeshTab Link overlays, styles and positions</small></span></label>
+      </div>
+      <div id="importSelectionNotice" class="import-selection-notice"></div>
+      <p class="dialog-help">Import merges the selected items with your current MeshTab. Existing data is not deleted. Linked Allocation/Task/Reminder relationships are preserved only when the related categories are selected.</p>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="importSelectionDialog">Cancel</button><button id="importSelectionSubmitBtn" class="btn btn-primary" type="submit">Import selected</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="exportSelectionDialog" class="dialog import-selection-dialog">
+    <form id="exportSelectionForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">EXPORT</p><h2>Select what to export</h2><p class="import-selection-source">Export everything, or just the Tab(s) you pick.</p></div>
+        <button class="icon-btn" type="button" data-close-dialog="exportSelectionDialog" aria-label="Close">x</button>
+      </div>
+      <div class="import-selection-options export-scope-options">
+        <label class="import-selection-option"><input id="exportScopeAll" type="radio" name="exportScope" value="all" checked><span><strong>Everything</strong><small>Full MeshTab backup — Settings, Website Overlays, General Notes, all Tabs, Allocations, Tasks, Reminders, and Work Clock history.</small></span></label>
+        <label class="import-selection-option"><input id="exportScopeTabs" type="radio" name="exportScope" value="tabs"><span><strong>Selected Tabs only</strong><small>Just the Groups, links, Tab Notes, Tasks, Allocations, linked Reminders, and MeshTab Link overlays for the Tab(s) you choose below.</small></span></label>
+      </div>
+      <div id="exportTabSelectToolbar" class="import-selection-toolbar hidden">
+        <button id="exportSelectAllTabsBtn" class="btn btn-secondary compact" type="button">Select all</button>
+        <button id="exportClearAllTabsBtn" class="btn btn-ghost compact" type="button">Clear all</button>
+      </div>
+      <div id="exportTabList" class="import-selection-options hidden"></div>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="exportSelectionDialog">Cancel</button><button id="exportSelectionSubmitBtn" class="btn btn-primary" type="submit">Export</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="dialog settings-dialog">
+    <form id="settingsForm" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">MESHTAB</p><h2>Settings</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="settingsDialog" aria-label="Close">x</button>
+      </div>
+      <section class="settings-section">
+        <h3>Chrome startup</h3>
+        <label class="settings-check"><input id="settingOpenOnStart" type="checkbox"><span><strong>Open on start</strong><small>Open MeshTab when Chrome starts.</small></span></label>
+        <label class="settings-check"><input id="settingPinOnStart" type="checkbox"><span><strong>Pin on start</strong><small>Pin MeshTab tabs that are opened or found during Chrome startup.</small></span></label>
+      </section>
+      <section class="settings-section">
+        <h3>MeshTab windows</h3>
+        <label class="settings-check"><input id="settingPinOnOpen" type="checkbox"><span><strong>Pin on Open</strong><small>Pin only a newly created MeshTab when you use Open MeshTab. An existing MeshTab you unpinned stays unpinned when it is focused again.</small></span></label>
+        <label class="settings-radio"><input type="radio" name="meshTabScope" value="per-window"><span><strong>One MeshTab per Window</strong><small>Open/focus MeshTab only inside the Chrome window you are working in.</small></span></label>
+        <label class="settings-radio"><input type="radio" name="meshTabScope" value="all-windows"><span><strong>One MeshTab for All Windows</strong><small>Reuse one MeshTab across Chrome windows.</small></span></label>
+      </section>
+      <section class="settings-section">
+        <h3>Appearance</h3>
+        <div class="settings-tone-grid" role="radiogroup" aria-label="MeshTab appearance">
+          <label class="settings-tone"><input type="radio" name="appearance" value="light"><span><strong>Light</strong><small>Classic MeshTab.</small></span></label>
+          <label class="settings-tone"><input type="radio" name="appearance" value="dark"><span><strong>Dark</strong><small>Dark workspace tone.</small></span></label>
+          <label class="settings-tone"><input type="radio" name="appearance" value="system"><span><strong>System</strong><small>Follow Chrome / OS.</small></span></label>
+        </div>
+        <div class="settings-range-grid">
+          <label class="settings-select-row" for="settingTextSize"><span>Text size</span><select id="settingTextSize"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option><option value="monstrous">MONSTROUS</option></select><small>Makes all of MeshTab's text bigger. Small is the original size.</small></label>
+          <label class="settings-range-row" for="settingTabFontSize"><span><strong>Tab font size</strong><output id="settingTabFontSizeValue">12 px</output></span><input id="settingTabFontSize" type="range" min="10" max="18" step="0.5" value="12"><small>Adjust the primary MeshTab Tab labels.</small></label>
+          <label class="settings-range-row" for="settingTabSpacing"><span><strong>Tab spacing</strong><output id="settingTabSpacingValue">7 px</output></span><input id="settingTabSpacing" type="range" min="2" max="20" step="1" value="7"><small>Adjust the space between primary Tabs.</small></label>
+          <label class="settings-select-row" for="settingHeaderClockSize"><span>Day &amp; date size</span><select id="settingHeaderClockSize"><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select><small>Size of the day and date in the top right. Medium is the default; Small matches the old look.</small></label>
+        </div>
+      </section>
+      <section class="settings-section">
+        <h3>Time entry</h3>
+        <label class="settings-select-row" for="settingDefaultTimeUnit"><span>Default time unit</span><select id="settingDefaultTimeUnit"><option value="hours">Hours</option><option value="minutes">Minutes</option></select><small>Default unit used when adding Task time, final Task time, and Allocation budgets. Hours is the default.</small></label>
+        <label class="settings-select-row" for="settingWeeklyBillableHours"><span>Total billable hours per week</span><input id="settingWeeklyBillableHours" type="number" min="0" max="168" step="0.25" value="40"><small>Your weekly billable target. The Allocation Center's Weekly Total shows this minus the time logged this week as Remaining. Defaults to 40.</small></label>
+      </section>
+      <section class="settings-section">
+        <h3>Work Clock</h3>
+        <label class="settings-check"><input id="settingWorkClockOverlay" type="checkbox"><span><strong>Show running Work Clock overlay</strong><small>Start the clock from a MeshTab Link popout, or start a timer from a Task's "Start Timer" button — it's the same clock either way. While active, it appears on the page with Pause/Resume and Stop, and can be click-held and dragged anywhere. When started from a Task, the overlay turns purple and names the linked Task; turning it off is the same switch for both.</small></span></label>
+        <label class="settings-select-row" for="settingWorkClockOverlayPosition"><span>Overlay position</span><select id="settingWorkClockOverlayPosition"><option value="top-left">Top left</option><option value="top-center">Top center</option><option value="top-right">Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-center">Bottom center</option><option value="bottom-right">Bottom right</option><option value="free">Custom (dragged)</option></select><small>The clock starts at the bottom by default. Drag it to save a custom position, or choose another preset here.</small></label>
+      </section>
+      <section class="settings-section">
+        <h3>Website Overlays</h3>
+        <label class="settings-check"><input id="settingSiteOverlaysEnabled" type="checkbox"><span><strong>Enable website overlays</strong><small>Show your named overlays on matching websites. Enabling this asks Chrome for optional website access so MeshTab can draw and move the overlays.</small></span></label>
+        <p class="dialog-help">Each overlay can have its own domain, name, colors, font, size, shape, and remembered screen-edge position. Turning this off hides them without deleting their definitions.</p>
+      </section>
+      <section class="settings-section">
+        <h3>New Tab / Home screen</h3>
+        <label class="settings-check"><input id="settingUseMeshTabNewTab" type="checkbox"><span><strong>Use MeshTab for New Tabs</strong><small>When available in this edition, new Chrome tabs open MeshTab. Turn it off to send new tabs to Chrome's built-in Home/New Tab screen.</small></span></label>
+        <label class="settings-select-row" for="settingHomeDefaultDesktop"><span>Default Home Tab</span><select id="settingHomeDefaultDesktop"></select><small>Choose which MeshTab Tab a fresh Chrome New Tab opens. “Last active Tab” uses the most recently selected MeshTab Tab.</small></label>
+        <div id="newTabBuildStatus" class="settings-status-card"></div>
+        <p class="dialog-help">Chrome only exposes New Tab ownership through the extension manifest. MeshTab can switch between MeshTab and Chrome's built-in New Tab screen, but Chrome does not expose the exact previous third-party New Tab extension for automatic restoration.</p>
+      </section>
+      <section class="settings-section">
+        <h3>Show features</h3>
+        <div class="settings-feature-grid">
+          <label class="settings-feature"><input id="settingShowNotes" type="checkbox"><span>SHOW Notes</span></label>
+          <label class="settings-feature"><input id="settingShowTasks" type="checkbox"><span>SHOW Tasks</span></label>
+          <label class="settings-feature"><input id="settingShowReminders" type="checkbox"><span>SHOW Reminders</span></label>
+          <label class="settings-feature"><input id="settingShowOverlays" type="checkbox"><span>SHOW Overlays</span></label>
+          <label class="settings-feature"><input id="settingShowQuickLinks" type="checkbox"><span>SHOW Quick Links</span></label>
+        </div>
+        <p class="dialog-help">Turning a feature off only hides its MeshTab controls and panels. Your saved Notes, Tasks, Reminders, and Overlay definitions are kept. Quick Links (General Notes, Tasks, Reminders, Allocations, Overlays, Archive) always show while you're already on one of those screens; turning this on also shows them while you're on a regular Tab.</p>
+      </section>
+      <section class="settings-section">
+        <h3>Backup</h3>
+        <div class="settings-inline-actions">
+          <button id="importBtn" class="btn btn-secondary compact" type="button" title="Import a MeshTab or TABME JSON backup">Import</button>
+          <button id="exportBtn" class="btn btn-secondary compact" type="button" title="Export a full backup, or just selected Tabs">Export</button>
+          <input id="importFileInput" class="sr-only" type="file" accept=".json,application/json">
+        </div>
+        <p class="dialog-help">Import a MeshTab or TABME JSON backup, or export everything (or just selected Tabs) to a JSON file.</p>
+      </section>
+      <section class="settings-section">
+        <h3>Maintenance</h3>
+        <button id="resetLayoutBtn" class="btn btn-ghost danger-text compact" type="button" title="Reset MeshTab layout without deleting Chrome bookmarks">Reset MeshTab layout</button>
+        <p class="dialog-help">Resets MeshTab back to the starter Main Tab. Your Chrome bookmarks are not deleted.</p>
+      </section>
+      <div class="dialog-actions"><button class="btn btn-ghost" type="button" data-close-dialog="settingsDialog">Cancel</button><button class="btn btn-primary" type="submit">Save Settings</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="bookmarkDialog" class="dialog dialog-wide">
+    <div class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="section-kicker">ADD A LINK</p><h2 id="bookmarkDialogTitle">Add to project</h2></div>
+        <button class="icon-btn" type="button" data-close-dialog="bookmarkDialog" aria-label="Close">x</button>
+      </div>
+      <div id="bucketChooserWrap" class="picker-bucket-row hidden"><label for="pickerBucketSelect">Add to</label><select id="pickerBucketSelect"></select></div>
+      <div class="picker-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m2.35-5.15a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+        <input id="bookmarkSearch" type="search" placeholder="Search all Chrome bookmarks..." autocomplete="off">
+      </div>
+      <div id="bookmarkResults" class="bookmark-results"></div>
+      <div class="manual-divider"><span>or add a new URL</span></div>
+      <form id="newUrlForm" class="url-form"><input id="newUrlTitle" type="text" placeholder="Title" maxlength="100" required><input id="newUrl" type="text" placeholder="https://example.com" required><button class="btn btn-primary" type="submit">Add</button></form>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="reminders.js"></script>
+  <script src="importers.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

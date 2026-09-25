@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tim's MeshTab</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup-shell">
+    <header class="brand-row">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div><small>TIM'S</small><strong>MeshTab</strong></div>
+    </header>
+    <section id="pageCard" class="page-card">
+      <div class="page-icon"><img id="pageFavicon" alt="" hidden><span id="pageFaviconFallback">?</span></div>
+      <div class="page-info"><strong id="pageTitle">Current page</strong><span id="pageUrl">Loading...</span></div>
+    </section>
+    <label class="field"><span>Save to project / folder</span><select id="bucketSelect"></select></label>
+    <button id="saveBtn" class="primary" type="button">Add to MeshTab</button>
+    <div class="quick-actions"><button id="quickNoteBtn" class="quick-note" type="button">+ Note</button><button id="quickTaskBtn" class="quick-task" type="button">+ Task</button><button id="quickReminderBtn" class="quick-reminder" type="button">+ Reminder</button></div>
+    <button id="openBtn" class="secondary" type="button">Open MeshTab</button>
+    <section id="quickNotePanel" class="quick-panel" hidden>
+      <div class="quick-panel-head"><strong>Quick Note</strong><button id="closeQuickNote" type="button" aria-label="Close quick note">x</button></div>
+      <label class="field tight"><span>New or existing</span><select id="quickNoteExisting"></select></label>
+      <input id="quickNoteTitle" class="quick-input" type="text" maxlength="100" placeholder="Note title">
+      <label class="field tight"><span>Location</span><select id="quickNoteLocation"></select></label>
+      <input id="quickNoteNewTab" class="quick-input" type="text" maxlength="60" placeholder="New Tab name" hidden>
+      <div class="quick-note-toolbar" role="toolbar" aria-label="Note formatting" aria-controls="quickNoteEditor">
+        <button type="button" class="quick-note-toolbar-btn" data-note-format="insertUnorderedList" title="Bullet list">• Bullets</button>
+      </div>
+      <div id="quickNoteEditor" class="quick-note-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Jot a note or paste a picture..."></div>
+      <label class="quick-check"><input id="quickNoteMasked" type="checkbox"><span>Mask note</span></label>
+      <button id="saveQuickNote" class="primary" type="button">Save Note</button>
+    </section>
+    <section id="quickTaskPanel" class="quick-panel" hidden>
+      <div class="quick-panel-head"><strong>Quick Task</strong><button id="closeQuickTask" type="button" aria-label="Close quick task">x</button></div>
+      <label class="field tight"><span>New or existing open task</span><select id="quickTaskExisting"></select></label>
+      <input id="quickTaskTitle" class="quick-input" type="text" maxlength="140" placeholder="What needs to get done?">
+      <label class="field tight"><span>Task Group</span><select id="quickTaskGroup"></select></label>
+      <div class="quick-two"><label><span>Priority</span><select id="quickTaskPriority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select></label><label><span>Due</span><input id="quickTaskDue" type="date"></label></div>
+      <textarea id="quickTaskDetails" class="quick-textarea" rows="3" maxlength="1600" placeholder="Optional details"></textarea>
+      <button id="saveQuickTask" class="primary" type="button">Save Task</button>
+      <button id="openTaskCenterBtn" class="secondary" type="button">Open Task Center</button>
+    </section>
+
+    <section id="quickReminderPanel" class="quick-panel" hidden>
+      <div class="quick-panel-head"><strong>Quick Reminder</strong><button id="closeQuickReminder" type="button" aria-label="Close quick reminder">x</button></div>
+      <input id="quickReminderTitle" class="quick-input" type="text" maxlength="140" placeholder="Remind me to...">
+      <textarea id="quickReminderDetails" class="quick-textarea" rows="2" maxlength="1600" placeholder="Optional details"></textarea>
+      <label class="field tight"><span>Linked Task <small>(optional)</small></span><select id="quickReminderTask"><option value="">No linked task</option></select></label>
+      <div class="quick-two"><label><span>Schedule</span><select id="quickReminderSchedule"><option value="once">One time</option><option value="daily">Daily</option><option value="selected-days">Selected days</option></select></label><label><span>Time</span><input id="quickReminderTime" type="time"></label></div>
+      <label id="quickReminderDateWrap" class="field tight"><span>Date</span><input id="quickReminderDate" class="quick-input" type="date"></label>
+      <div id="quickReminderDays" class="quick-reminder-days" hidden><span>Repeat</span><div><label><input type="checkbox" value="1">M</label><label><input type="checkbox" value="2">T</label><label><input type="checkbox" value="3">W</label><label><input type="checkbox" value="4">T</label><label><input type="checkbox" value="5">F</label><label><input type="checkbox" value="6">S</label><label><input type="checkbox" value="0">S</label></div></div>
+      <button id="saveQuickReminder" class="primary" type="button">Save Reminder</button>
+      <button id="openReminderCenterBtn" class="secondary" type="button">Open Reminders</button>
+    </section>
+    <p id="status" class="status" role="status"></p>
+    <footer class="popup-footer"><span>&copy; 2026 &middot; Written by&nbsp;Tim Place,&nbsp;TP-Soft, LLC.</span><a href="about.html" target="_blank" rel="noopener">About</a><span id="popupVersion">v1.32.0</span></footer>
+  </main>
+  <script src="reminders.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Tim's MeshTab",
+  "short_name": "MeshTab",
+  "version": "1.51.0",
+  "description": "A visual Chrome workspace for tabs, groups, bookmarks, notes, Tasks, reminders and configurable New Tab landing.",
+  "permissions": [
+    "bookmarks",
+    "storage",
+    "activeTab",
+    "tabs",
+    "unlimitedStorage",
+    "alarms",
+    "notifications"
+  ],
+  "background": {
+    "scripts": ["reminders.js", "background.js"]
+  },
+  "action": {
+    "default_title": "Save to Tim's MeshTab",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://calendar.google.com;"
+  },
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "optional_permissions": [
+    "scripting"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tims-meshtab@timp311.example",
+      "strict_min_version": "109.0"
+    }
+  }
+}
